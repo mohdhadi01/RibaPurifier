@@ -1,89 +1,116 @@
+
+
 // export interface Transaction {
-//     date: string;
-//     description: string;
-//     amount: number;
+//   date: string;
+//   description: string;
+//   amount: number;
+// }
+
+// // 1. Isolated helper to safely extract data from any single line
+// function extractDataFromRow(row: string): { date: string | null, amount: number } {
+//   // Extract primary date (Handles "31 Mar 2025", "28-03-2025", "03 Feb '26")
+//   const dateMatch = row.match(/\d{2}[-\s/][a-zA-Z]{3}[-\s/]\'?\d{2,4}|\d{2}[-/]\d{2}[-/]\d{4}/);
+//   const dateStr = dateMatch ? dateMatch[0] : null;
+  
+//   // Clean the row to isolate the money
+//   let cleanRow = row;
+//   if (dateMatch) cleanRow = cleanRow.replace(dateMatch[0], ''); 
+//   cleanRow = cleanRow.replace(/\d{2}[-\s/][a-zA-Z]{3}[-\s/]\'?\d{2,4}/g, ''); // Scrub secondary dates
+//   cleanRow = cleanRow.replace(/\b\d{5,}\b/g, ''); // Scrub long Bank IDs/UTRs
+  
+//   // THE SILVER BULLET: Extract amounts strictly requiring a decimal point (.XX)
+//   // This completely ignores serial numbers (like "358"), years ("2025"), etc.
+//   const amountRegex = /\d{1,3}(?:,\d{3})*\.\d{1,2}|\d+\.\d{1,2}/g;
+//   const amounts = cleanRow.match(amountRegex);
+  
+//   let amount = 0;
+//   if (amounts && amounts.length > 0) {
+//     // The first decimal number remaining is universally the Transaction Amount.
+//     // (The second one is the running balance, which we ignore here).
+//     const cleanAmountStr = amounts[0].replace(/,/g, '');
+//     amount = parseFloat(cleanAmountStr);
 //   }
   
-//   export function detectRibaTransactions(structuredText: string): Transaction[] {
-//     const statementRows = structuredText.split('\n');
-//     const foundRiba: Transaction[] = [];
+//   return { date: dateStr, amount };
+// }
+
+// export function detectRibaTransactions(structuredText: string): Transaction[] {
+//   const statementRows = structuredText.split('\n');
+//   const foundRiba: Transaction[] = [];
   
-//     // Expanded keywords for standard Indian banks
-//     const ribaKeywords = [
-//       'INT PD', 
-//       'INT.PD', 
-//       'CREDIT INTEREST', 
-//       'CR INT', 
-//       'SAVINGS INT', 
-//       'INTEREST PAID', 
-//       'INTEREST CR',
-//       'INTEREST RECEIVED',
-//       'SBINT',          
-//       'SB INT',         
-//       'INT. REC',       
-//       'INT CREDIT',
-//       'INT CRED',
-//       'INT CR',
-//       'INT CRD',
-//       'INT CRDT',
-//       'INT CRDT',
-//     ];
-  
-//     statementRows.forEach(row => {
-//       const upperRow = row.toUpperCase();
-//       const isInterest = ribaKeywords.some(keyword => upperRow.includes(keyword));
-      
-//       if (isInterest) { 
-//         // 1. Extract the Row's Primary Date
-//         // Matches: "13 Feb '26", "13-Feb-2026", "13/02/2026", etc.
-//         const dateMatch = row.match(/\d{2}[-\s/][a-zA-Z]{3}[-\s/]\'?\d{2,4}|\d{2}[-/]\d{2}[-/]\d{4}/);
-//         const dateStr = dateMatch ? dateMatch[0] : 'Unknown Date';
-        
-//         // 2. CLEAN THE ROW (The Secret Sauce)
-//         let cleanRow = row;
-        
-//         // Remove the main date
-//         if (dateMatch) cleanRow = cleanRow.replace(dateMatch[0], '');
-        
-//         // Remove secondary descriptive dates (e.g., "Interest for 12-Feb-2026")
-//         cleanRow = cleanRow.replace(/\d{2}[-\s/][a-zA-Z]{3}[-\s/]\'?\d{2,4}/g, '');
-        
-//         // Remove Bank Transaction IDs / UTRs (Any continuous number longer than 5 digits)
-//         cleanRow = cleanRow.replace(/\b\d{6,}\b/g, '');
-        
-//         // 3. Extract the remaining valid amounts
-//         // Looks for digits, optional commas, and 0, 1, or 2 decimal places
-//         const amountRegex = /\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?/g;
-//         const amounts = cleanRow.match(amountRegex);
-        
-//         let finalAmount = 0;
-        
-//         if (amounts && amounts.length > 0) {
-//           // Filter out stray loose single digits (like a random '2')
-//           const validAmounts = amounts.filter(a => !isNaN(parseFloat(a.replace(/,/g, ''))));
-  
-//           if (validAmounts.length >= 1) {
-//             // Because we scrubbed the dates and IDs, the first number remaining 
-//             // in the sentence is ALWAYS the transaction amount. 
-//             // (The second number, if present, is the account balance).
-//             const amountStr = validAmounts[0].replace(/,/g, ''); 
-//             finalAmount = parseFloat(amountStr);
+//   // Keep track of rows we already combined so we don't count them twice
+//   const processedIndexes = new Set<number>(); 
+
+//   // Comprehensive dictionary covering SBI, HDFC, ICICI, Canara, Paytm, Axis
+//   const ribaKeywords = [
+//     'INT PD', 'INT.PD', 'CREDIT INTEREST', 'CR INT', 'SAVINGS INT', 
+//     'INTEREST PAID', 'INTEREST CR', 'INTEREST RECEIVED', 'SBINT', 
+//     'SB INT', 'INT. REC', 'INT CREDIT', 'INT CRED', 'INT CRD', 'INT CRDT'
+//   ];
+
+//   for (let i = 0; i < statementRows.length; i++) {
+//     // Skip if this line was already absorbed by a multi-line transaction
+//     if (processedIndexes.has(i)) continue; 
+
+//     const row = statementRows[i];
+//     const upperRow = row.toUpperCase();
+//     const isInterest = ribaKeywords.some(keyword => upperRow.includes(keyword));
+    
+//     if (isInterest) { 
+//       let { date: finalDate, amount: finalAmount } = extractDataFromRow(row);
+//       let foundAmount = finalAmount > 0;
+
+//       // DYNAMIC LOOKAHEAD: If Canara Bank pushes the money 2 lines down, find it!
+//       if (!foundAmount) {
+//           for (let j = 1; j <= 3; j++) {
+//               if (i + j < statementRows.length) {
+//                   const nextData = extractDataFromRow(statementRows[i + j]);
+//                   if (nextData.amount > 0) {
+//                       finalAmount = nextData.amount;
+//                       if (!finalDate) finalDate = nextData.date;
+//                       processedIndexes.add(i + j); // Mark line as used
+//                       foundAmount = true;
+//                       break; 
+//                   }
+//               }
 //           }
-//         }
-        
-//         // 4. Save to Ledger
-//         if (finalAmount > 0) {
-//           foundRiba.push({
-//             date: dateStr,
-//             description: 'Interest Credit Detected',
-//             amount: finalAmount
-//           });
-//         }
 //       }
-//     });
-  
-//     return foundRiba;
+
+//       // DYNAMIC LOOKBEHIND: In case of inverted PDF table formats
+//       if (!foundAmount) {
+//           for (let j = 1; j <= 2; j++) {
+//               if (i - j >= 0 && !processedIndexes.has(i - j)) {
+//                   const prevData = extractDataFromRow(statementRows[i - j]);
+//                   if (prevData.amount > 0) {
+//                       finalAmount = prevData.amount;
+//                       if (!finalDate) finalDate = prevData.date;
+//                       processedIndexes.add(i - j); 
+//                       foundAmount = true;
+//                       break;
+//                   }
+//               }
+//           }
+//       }
+      
+//       // Save to Ledger
+//       if (foundAmount && finalAmount > 0) {
+//         foundRiba.push({
+//           date: finalDate || 'Unknown Date',
+//           description: 'Interest Credit Detected',
+//           amount: finalAmount
+//         });
+//       }
+//     }
 //   }
+
+//   return foundRiba;
+// }
+
+// // Ensure the Analysis Summary accurately reflects the amount of data processed
+// export function countTotalTransactions(structuredText: string): number {
+//   return structuredText.split('\n').filter(row => row.trim().length > 0).length;
+// }
+
 
 export interface Transaction {
   date: string;
@@ -93,27 +120,24 @@ export interface Transaction {
 
 // 1. Isolated helper to safely extract data from any single line
 function extractDataFromRow(row: string): { date: string | null, amount: number } {
-  // Extract primary date
-  const dateMatch = row.match(/\d{2}[-\s/][a-zA-Z]{3}[-\s/]\'?\d{2,4}|\d{2}[-/]\d{2}[-/]\d{4}/);
-  const dateStr = dateMatch ? dateMatch[0] : null;
+
+  // const dateMatch = row.match(/^\s*(\d{2}[-\s/][a-zA-Z]{3}[-\s/]\'?\d{2,4}|\d{2}[-/]\d{2}[-/]\d{4})/);
+  const dateMatch = row.match(/^\s*(?:\d{1,5}\s+[.)\s]*)?(\d{2}[-\s/][a-zA-Z]{3}[-\s/]\'?\d{2,4}|\d{2}[-/]\d{2}[-/]\d{4})/);
+  const dateStr = dateMatch ? dateMatch[1] : null;
   
-  // Clean the row to isolate the money
-  let cleanRow = row;
-  if (dateMatch) cleanRow = cleanRow.replace(dateMatch[0], ''); // Remove main date
-  cleanRow = cleanRow.replace(/\d{2}[-\s/][a-zA-Z]{3}[-\s/]\'?\d{2,4}/g, ''); // Remove secondary descriptive dates
-  cleanRow = cleanRow.replace(/\b\d{6,}\b/g, ''); // Remove long Bank IDs/UTRs
+  // Clean ALL dates from the row so they don't get accidentally parsed as amounts
+  let cleanRow = row.replace(/\d{2}[-\s/][a-zA-Z]{3}[-\s/]\'?\d{2,4}|\d{2}[-/]\d{2}[-/]\d{4}/g, ' '); 
+  cleanRow = cleanRow.replace(/\b\d{5,}\b/g, ' '); // Scrub long Bank IDs/UTRs
   
-  // Extract remaining amounts
-  const amountRegex = /\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?/g;
+  // Extract amounts strictly requiring a decimal point (.XX)
+  const amountRegex = /\d{1,3}(?:,\d{3})*\.\d{1,2}|\d+\.\d{1,2}/g;
   const amounts = cleanRow.match(amountRegex);
   
   let amount = 0;
   if (amounts && amounts.length > 0) {
-    // Filter out random single digits left behind (like "Chq: 0")
-    const validAmounts = amounts.filter(a => !isNaN(parseFloat(a.replace(/,/g, ''))));
-    if (validAmounts.length >= 1) {
-      amount = parseFloat(validAmounts[0].replace(/,/g, ''));
-    }
+    // The first decimal number remaining is universally the Transaction Amount.
+    const cleanAmountStr = amounts[0].replace(/,/g, '');
+    amount = parseFloat(cleanAmountStr);
   }
   
   return { date: dateStr, amount };
@@ -129,10 +153,9 @@ export function detectRibaTransactions(structuredText: string): Transaction[] {
   const ribaKeywords = [
     'INT PD', 'INT.PD', 'CREDIT INTEREST', 'CR INT', 'SAVINGS INT', 
     'INTEREST PAID', 'INTEREST CR', 'INTEREST RECEIVED', 'SBINT', 
-    'SB INT', 'INT. REC', 'INT CREDIT'
+    'SB INT', 'INT. REC', 'INT CREDIT', 'INT CRED', 'INT CRD', 'INT CRDT'
   ];
 
-  // Using a standard for-loop so we can safely track the index (i)
   for (let i = 0; i < statementRows.length; i++) {
     // Skip if this line was already absorbed by a multi-line transaction
     if (processedIndexes.has(i)) continue; 
@@ -145,31 +168,37 @@ export function detectRibaTransactions(structuredText: string): Transaction[] {
       let { date: finalDate, amount: finalAmount } = extractDataFromRow(row);
       let foundAmount = finalAmount > 0;
 
-      // 2. THE DYNAMIC LOOKAHEAD: Scan up to 3 lines DOWN for the amount
+      // DYNAMIC LOOKAHEAD
       if (!foundAmount) {
           for (let j = 1; j <= 3; j++) {
               if (i + j < statementRows.length) {
                   const nextData = extractDataFromRow(statementRows[i + j]);
                   if (nextData.amount > 0) {
                       finalAmount = nextData.amount;
-                      if (!finalDate) finalDate = nextData.date;
-                      processedIndexes.add(i + j); // Mark this line as used!
+                      
+                      // FIX 2: If the line with the money has a valid date, ALWAYS prefer it!
+                      if (nextData.date) finalDate = nextData.date; 
+                      
+                      processedIndexes.add(i + j); // Mark line as used
                       foundAmount = true;
-                      break; // Stop looking once we find the money
+                      break; 
                   }
               }
           }
       }
 
-      // 3. THE DYNAMIC LOOKBEHIND: Scan up to 2 lines UP just in case (inverted formats)
+      // DYNAMIC LOOKBEHIND (Crucial for the PNB format you showed)
       if (!foundAmount) {
           for (let j = 1; j <= 2; j++) {
               if (i - j >= 0 && !processedIndexes.has(i - j)) {
                   const prevData = extractDataFromRow(statementRows[i - j]);
                   if (prevData.amount > 0) {
                       finalAmount = prevData.amount;
-                      if (!finalDate) finalDate = prevData.date;
-                      processedIndexes.add(i - j); // Mark this line as used!
+                      
+                      // FIX 3: Prefer the date attached to the money row
+                      if (prevData.date) finalDate = prevData.date; 
+                      
+                      processedIndexes.add(i - j); 
                       foundAmount = true;
                       break;
                   }
@@ -177,7 +206,7 @@ export function detectRibaTransactions(structuredText: string): Transaction[] {
           }
       }
       
-      // 4. Save to Ledger
+      // Save to Ledger
       if (foundAmount && finalAmount > 0) {
         foundRiba.push({
           date: finalDate || 'Unknown Date',
@@ -192,16 +221,5 @@ export function detectRibaTransactions(structuredText: string): Transaction[] {
 }
 
 export function countTotalTransactions(structuredText: string): number {
-  const statementRows = structuredText.split('\n');
-  let count = 0;
-
-  for (const row of statementRows) {
-    const isTransaction = /\d{2}[-\s/][a-zA-Z]{3}[-\s/]\'?\d{2,4}|\d{2}[-/]\d{2}[-/]\d{4}/.test(row);
-    
-    if (isTransaction) {
-      count++;
-    }
-  }
-  
-  return count;
+  return structuredText.split('\n').filter(row => row.trim().length > 0).length;
 }
