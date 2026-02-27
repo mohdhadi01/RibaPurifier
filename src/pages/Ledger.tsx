@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -108,10 +108,12 @@ const Th = styled.th`
 `;
 
 const Tr = styled(motion.tr)<{ $isExcluded: boolean }>`
-  transition: background 0.3s ease;
-  
+  transition: background 0.3s ease, opacity 0.3s ease, transform 0.2s ease;
+  opacity: ${({ $isExcluded }) => ($isExcluded ? 0.6 : 1)};
+
   &:hover {
     background: rgba(229, 192, 123, 0.03);
+    transform: translateY(-1px);
   }
 
   /* Excluded State Styles */
@@ -139,8 +141,8 @@ const Td = styled.td`
 `;
 
 const ExcludeBtn = styled.button<{ $isExcluded: boolean }>`
-  background: transparent;
-  border: 1px solid ${({ $isExcluded }) => ($isExcluded ? 'rgba(229, 192, 123, 0.3)' : 'rgba(140, 154, 142, 0.2)')};
+  background: ${({ $isExcluded }) => ($isExcluded ? 'rgba(229, 192, 123, 0.1)' : 'transparent')};
+  border: 1px solid ${({ $isExcluded }) => ($isExcluded ? '#E5C07B' : 'rgba(140, 154, 142, 0.2)')};
   color: ${({ $isExcluded }) => ($isExcluded ? '#E5C07B' : '#8C9A8E')};
   padding: 8px 18px;
   border-radius: 999px;
@@ -151,7 +153,7 @@ const ExcludeBtn = styled.button<{ $isExcluded: boolean }>`
   transition: all 0.3s ease;
 
   &:hover {
-    background: ${({ $isExcluded }) => ($isExcluded ? 'rgba(229, 192, 123, 0.1)' : 'rgba(239, 68, 68, 0.1)')};
+    background: ${({ $isExcluded }) => ($isExcluded ? 'rgba(229, 192, 123, 0.16)' : 'rgba(239, 68, 68, 0.1)')};
     border-color: ${({ $isExcluded }) => ($isExcluded ? '#E5C07B' : '#EF4444')};
     color: ${({ $isExcluded }) => ($isExcluded ? '#E5C07B' : '#EF4444')};
   }
@@ -247,13 +249,16 @@ const rowVariants = {
 };
 
 export default function Ledger() {
-  const { results, rawText } = useParser();
-  const [excluded, setExcluded] = useState<Record<number, boolean>>({});
+  const { results, rawText, setResults } = useParser();
   const navigate = useNavigate();
   const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' });
 
   const handleExclude = (index: number) => {
-    setExcluded(prev => ({ ...prev, [index]: !prev[index] }));
+    setResults(prev =>
+      prev.map((tx, i) =>
+        i === index ? { ...tx, excluded: !tx.excluded } : tx
+      )
+    );
   };
 
   return (
@@ -311,21 +316,24 @@ export default function Ledger() {
                       </Td>
                     </tr>
                   ) : (
-                    results.map((r, i) => (
-                      <Tr key={i} variants={rowVariants} $isExcluded={!!excluded[i]}>
-                        <Td>{r.date || 'Unknown'}</Td>
-                        <Td>{r.description}</Td>
-                        <Td className="amount">{formatter.format(r.amount)}</Td>
-                        <Td style={{ textAlign: 'right' }}>
-                          <ExcludeBtn 
-                            $isExcluded={!!excluded[i]}
-                            onClick={() => handleExclude(i)}
-                          >
-                            {excluded[i] ? 'Restore' : 'Exclude'}
-                          </ExcludeBtn>
-                        </Td>
-                      </Tr>
-                    ))
+                    results.map((r, i) => {
+                      const isExcluded = !!r.excluded;
+                      return (
+                        <Tr key={i} variants={rowVariants} $isExcluded={isExcluded}>
+                          <Td>{r.date || 'Unknown'}</Td>
+                          <Td>{r.description}</Td>
+                          <Td className="amount">{formatter.format(r.amount)}</Td>
+                          <Td style={{ textAlign: 'right' }}>
+                            <ExcludeBtn 
+                              $isExcluded={isExcluded}
+                              onClick={() => handleExclude(i)}
+                            >
+                              {isExcluded ? 'Include again' : 'Exclude from total'}
+                            </ExcludeBtn>
+                          </Td>
+                        </Tr>
+                      );
+                    })
                   )}
                 </motion.tbody>
               </Table>

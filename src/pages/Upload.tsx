@@ -423,8 +423,8 @@ export default function Upload() {
                 <CheckIcon>✓</CheckIcon>
                 <FileName>{fileName}</FileName>
                 <div style={{ color: '#8C9A8E', fontSize: '1rem', fontWeight: 300, maxWidth: 420, textAlign: 'center' }}>
-                  Text extracted successfully. We scanned your statement and flagged{' '}
-                  <strong style={{ color: '#F4F4F5', fontWeight: 500 }}>{results.length}</strong> potential interest/Riba entries.
+                  Statement analyzed securely. We detected{' '}
+                  <strong style={{ color: '#F4F4F5', fontWeight: 500 }}>{results.length}</strong> potential interest/Riba transaction{results.length === 1 ? '' : 's'}.
                 </div>
                 {rawText && (
                   <ActionBtn
@@ -432,11 +432,10 @@ export default function Upload() {
                     whileTap={{ scale: 0.98 }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      // Placeholder: route somewhere or keep as no-op for now
                       navigate('/dashboard');
                     }}
                   >
-                    Continue
+                    View insights
                   </ActionBtn>
                 )}
               </VerifiedCard>
@@ -445,30 +444,7 @@ export default function Upload() {
         </DropZone>
       </div>
 
-      {/* Debug view of extracted text */}
-      {rawText && (
-        <div
-          style={{
-            marginTop: '24px',
-            maxWidth: '680px',
-            width: '100%',
-            background: 'rgba(18,28,23,0.9)',
-            borderRadius: 16,
-            border: '1px solid rgba(229,192,123,0.2)',
-            padding: '16px 20px',
-            fontSize: '0.85rem',
-            lineHeight: 1.4,
-            color: '#E5C07B',
-            whiteSpace: 'pre-wrap'
-          }}
-        >
-          <div style={{ marginBottom: 8, fontWeight: 600, color: '#F4F4F5' }}>
-            Extracted text preview (first 500 characters)
-          </div>
-          {rawText}
-          {rawText.length > 500 ? '…' : ''}
-        </div>
-      )}
+      {/* Debug view removed for production */}
 
       {/* PASSWORD PROMPT MODAL (simple wrapper around pdfjs password handling) */}
       <AnimatePresence>

@@ -116,6 +116,8 @@ export interface Transaction {
   date: string;
   description: string;
   amount: number;
+  /** Marked true when user chooses to exclude this entry from totals */
+  excluded?: boolean;
 }
 
 // 1. Isolated helper to safely extract data from any single line
@@ -211,7 +213,8 @@ export function detectRibaTransactions(structuredText: string): Transaction[] {
         foundRiba.push({
           date: finalDate || 'Unknown Date',
           description: 'Interest Credit Detected',
-          amount: finalAmount
+          amount: finalAmount,
+          excluded: false
         });
       }
     }

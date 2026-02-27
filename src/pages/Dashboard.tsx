@@ -245,12 +245,13 @@ const cardVariants = {
 export default function Dashboard() {
   const { results, rawText, totalScanned } = useParser();
   const navigate = useNavigate();
-  const totalRiba = results.reduce((sum, r) => sum + (r.amount || 0), 0);
- 
 
-  const recent = results.slice(0, 3);
+  // Respect exclusions from the ledger across the whole app
+  const activeResults = results.filter(r => !r.excluded);
+  const totalRiba = activeResults.reduce((sum, r) => sum + (r.amount || 0), 0);
+  const recent = activeResults.slice(0, 3);
   const hasScan = !!rawText;
-  const isEmpty = totalRiba === 0 && results.length === 0 
+  const isEmpty = totalRiba === 0 && activeResults.length === 0;
 
   const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' });
 
@@ -333,14 +334,14 @@ export default function Dashboard() {
                 </span>
               </div>
               
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '16px', color: totalRiba > 0 ? '#E5C07B' : '#00DF81', fontWeight: 500 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '16px', color: totalRiba > 0 ? '#E5C07B' : '#00DF81', fontWeight: 500 }}>
                 <div style={{ 
                   width: 8, height: 8, borderRadius: '50%', 
                   backgroundColor: totalRiba > 0 ? '#E5C07B' : '#00DF81', 
                   boxShadow: `0 0 12px ${totalRiba > 0 ? '#E5C07B' : '#00DF81'}` 
                 }} />
                 {totalRiba > 0 
-                  ? `${results.length} entries flagged for review` 
+                  ? `${activeResults.length} entries flagged for review` 
                   : 'Ledger is 100% clean'}
               </div>
               

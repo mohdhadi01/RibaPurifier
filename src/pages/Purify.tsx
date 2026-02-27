@@ -4,6 +4,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import Confetti from 'react-confetti';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useParser } from '../context/ParserContext';
 
 // --- ANIMATIONS ---
 const shine = keyframes`
@@ -288,10 +289,10 @@ export default function Purify() {
   const [selected, setSelected] = useState<any | null>(null);
   const [celebrate, setCelebrate] = useState(false);
   const [purified, setPurified] = useState(false);
+  const { results, setResults } = useParser();
 
-  // For now, we don't have live parsed "riba" totals wired in.
-  // Replace this with a real computed value once parsing feeds data into state.
-  const totalRiba = 0;
+  const activeResults = results.filter(r => !r.excluded);
+  const totalRiba = activeResults.reduce((sum, r) => sum + (r.amount || 0), 0);
   const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' });
 
   const handlePurify = () => {
@@ -300,7 +301,7 @@ export default function Purify() {
     
     setTimeout(() => {
       setCelebrate(false);
-      if(setResults) setResults([]); 
+      setResults([]);
       navigate('/dashboard');
     }, 5500);
   };
