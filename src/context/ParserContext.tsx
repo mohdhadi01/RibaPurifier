@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { extractStructuredTextFromPDF } from '../utils/pdfExtractor';
-import { detectRibaTransactions, Transaction } from '../utils/ribaDetector';
+import { countTotalTransactions, detectRibaTransactions, Transaction } from '../utils/ribaDetector';
 
 interface ParserContextType {
   results: Transaction[];
+  totalScanned: number;
   setResults: React.Dispatch<React.SetStateAction<Transaction[]>>;
   parsing: boolean;
   passwordRequired: boolean;
@@ -18,6 +19,7 @@ const ParserContext = createContext<ParserContextType | undefined>(undefined);
 
 export function ParserProvider({ children }: { children: ReactNode }) {
   const [results, setResults] = useState<Transaction[]>([]);
+  const [totalScanned, setTotalScanned] = useState<number>(0);
   const [parsing, setParsing] = useState(false);
   const [passwordRequired, setPasswordRequired] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
@@ -33,8 +35,10 @@ export function ParserProvider({ children }: { children: ReactNode }) {
       setRawText(structuredText); 
       
       const identifiedTransactions = detectRibaTransactions(structuredText);
-      
+      const scannedCount = countTotalTransactions(structuredText);
+
       setResults(identifiedTransactions);
+      setTotalScanned(scannedCount);
       setPasswordRequired(false);
       setCurrentFile(null); 
     } catch (err: any) {
@@ -67,7 +71,7 @@ export function ParserProvider({ children }: { children: ReactNode }) {
 
   return (
     <ParserContext.Provider value={{
-      results, setResults, parsing, passwordRequired, passwordError, rawText,
+      results, setResults, parsing, passwordRequired, passwordError, rawText, totalScanned,
       parseFile, submitPassword, cancelPassword
     }}>
       {children}

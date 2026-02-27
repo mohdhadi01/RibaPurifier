@@ -1,90 +1,169 @@
 import React from 'react';
-import styled, { keyframes, useTheme } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+import { motion } from 'framer-motion';
 
-const rotate = keyframes`
+// --- ANIMATIONS ---
+const spin = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 `;
 
-const Wrapper = styled.div`
+const spinReverse = keyframes`
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+`;
+
+const pulseGlow = keyframes`
+  0%, 100% { transform: scale(0.95) rotate(45deg); box-shadow: 0 0 20px rgba(229, 192, 123, 0.2); }
+  50% { transform: scale(1.05) rotate(45deg); box-shadow: 0 0 40px rgba(229, 192, 123, 0.6); }
+`;
+
+const textShimmer = keyframes`
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+`;
+
+// --- STYLING ---
+const Container = styled(motion.div)`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  padding: 2rem;
+  justify-content: center;
+  gap: 24px;
+  padding: 20px;
 `;
 
-const CircleWrap = styled.div`
-  width: 120px;
-  height: 120px;
-  display: grid;
-  place-items: center;
+// The Engine Visual
+const EngineWrapper = styled.div`
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
-const Svg = styled.svg`
-  width: 100%;
-  height: 100%;
-  transform-origin: 50% 50%;
-  animation: ${rotate} 3s linear infinite;
-`;
-
-const Glow = styled.div`
+const OuterRing = styled.div`
   position: absolute;
-  width: 200px;
-  height: 200px;
-  filter: blur(20px);
-  opacity: 0.08;
-  background: radial-gradient(circle at 30% 30%, ${({ theme }) => theme.colors.accentPrimary}, transparent 30%),
-              radial-gradient(circle at 70% 70%, ${({ theme }) => theme.colors.accentSuccess}, transparent 30%);
-  border-radius: 9999px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px dashed rgba(229, 192, 123, 0.3);
+  animation: ${spin} 8s linear infinite;
 `;
 
-const Label = styled.div`
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  text-align: center;
+const InnerRing = styled.div`
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top: 2px solid #E5C07B;
+  border-bottom: 2px solid #E5C07B;
+  animation: ${spinReverse} 3s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
 `;
 
-const Sub = styled.div`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: 0.95rem;
+const CoreStar = styled.div`
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, #E5C07B 0%, #C99E52 100%);
+  position: relative;
+  animation: ${pulseGlow} 2s ease-in-out infinite;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: inherit;
+    transform: rotate(45deg);
+  }
 `;
 
-const Processing: React.FC<{ message?: string }> = ({ message = 'Analyzing Transactions...' }) => {
-  const theme: any = useTheme();
-  return (
-    <Wrapper>
-      <div style={{ position: 'relative' }}>
-        <Glow />
-        <CircleWrap>
-          <Svg viewBox="0 0 100 100" role="img" aria-label="Processing">
-            <defs>
-              <linearGradient id="g" x1="0%" x2="100%">
-                <stop offset="0%" stopColor={theme.colors.accentSuccess} />
-                <stop offset="100%" stopColor={theme.colors.accentPrimary} />
-              </linearGradient>
-            </defs>
-            <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(0,0,0,0.04)" strokeWidth="8" />
-            <circle
-              cx="50"
-              cy="50"
-              r="36"
-              fill="none"
-              stroke="url(#g)"
-              strokeWidth="6"
-              strokeLinecap="round"
-              strokeDasharray="169"
-              strokeDashoffset="56"
-            />
-            <circle cx="50" cy="50" r="6" fill="#fff" stroke="url(#g)" strokeWidth="2" />
-          </Svg>
-        </CircleWrap>
-      </div>
-      <Label>{message}</Label>
-      <Sub>Please wait while we scan your statement for interest charges.</Sub>
-    </Wrapper>
+// Typography
+const StatusTitle = styled.h3`
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0;
+  
+  /* Shimmering Gold Text */
+  background: linear-gradient(
+    to right,
+    #F4F4F5 20%,
+    #E5C07B 40%,
+    #E5C07B 60%,
+    #F4F4F5 80%
   );
-};
+  background-size: 200% auto;
+  color: #000;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: ${textShimmer} 3s linear infinite;
+`;
 
-export default Processing;
+const StatusSubtitle = styled.p`
+  font-family: 'Outfit', sans-serif;
+  color: #8C9A8E;
+  font-size: 0.95rem;
+  margin: 0;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+`;
 
+// File Badge
+const FileBadge = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(20, 30, 25, 0.6);
+  border: 1px solid rgba(229, 192, 123, 0.15);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  color: #A1A1AA;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  margin-top: 8px;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    color: #E5C07B;
+  }
+`;
+
+interface ProcessingProps {
+  fileName?: string | null;
+}
+
+export default function Processing({ fileName }: ProcessingProps) {
+  return (
+    <Container
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.4 }}
+    >
+      <EngineWrapper>
+        <OuterRing />
+        <InnerRing />
+        <CoreStar />
+      </EngineWrapper>
+
+      <div style={{ textAlign: 'center' }}>
+        <StatusTitle>Scanning Ledger...</StatusTitle>
+        <StatusSubtitle>Decrypting and isolating transactions</StatusSubtitle>
+      </div>
+
+      {fileName && (
+        <FileBadge>
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          {fileName}
+        </FileBadge>
+      )}
+    </Container>
+  );
+}

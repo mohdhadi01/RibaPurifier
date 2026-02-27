@@ -243,14 +243,14 @@ const cardVariants = {
 };
 
 export default function Dashboard() {
-  const { results, rawText } = useParser();
+  const { results, rawText, totalScanned } = useParser();
   const navigate = useNavigate();
-  
   const totalRiba = results.reduce((sum, r) => sum + (r.amount || 0), 0);
-  const totalSavings = Math.max(0, 100000 - totalRiba); // 100000 is dummy principal for now
+ 
+
   const recent = results.slice(0, 3);
   const hasScan = !!rawText;
-  const isEmpty = !hasScan; // only "awaits" state before any scan has happened
+  const isEmpty = totalRiba === 0 && results.length === 0 
 
   const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' });
 
@@ -307,13 +307,43 @@ export default function Dashboard() {
             </Card>
 
             {/* Halal Principal Card */}
-            <Card variants={cardVariants}>
+            {/* <Card variants={cardVariants}>
               <Title>Halal Principal</Title>
-              <HalalAmount>{formatter.format(totalSavings)}</HalalAmount>
+              <HalalAmount>{formatter.format(totalScanned)}</HalalAmount>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '16px', color: '#00DF81', fontWeight: 500 }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#00DF81', boxShadow: '0 0 12px #00DF81' }} />
                 100% Purified Status
               </div>
+              <div style={{ marginTop: 'auto', paddingTop: '32px' }}>
+                <Link to="/ledger" style={{ color: '#E5C07B', textDecoration: 'none', fontSize: '1rem', fontWeight: 500, borderBottom: '1px solid rgba(229,192,123,0.3)', paddingBottom: '4px', transition: 'border-color 0.3s' }} onMouseEnter={(e) => e.currentTarget.style.borderColor = '#E5C07B'} onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(229,192,123,0.3)'}>
+                  View Detailed Ledger →
+                </Link>
+              </div>
+            </Card> */}
+
+            <Card variants={cardVariants}>
+              <Title>Analysis Summary</Title>
+              
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '16px' }}>
+                <BigAmount style={{ marginTop: 0 }}>
+                  {totalScanned || 0}
+                </BigAmount>
+                <span style={{ fontSize: '1.1rem', color: '#8C9A8E', fontWeight: 300 }}>
+                  lines scanned
+                </span>
+              </div>
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '16px', color: totalRiba > 0 ? '#E5C07B' : '#00DF81', fontWeight: 500 }}>
+                <div style={{ 
+                  width: 8, height: 8, borderRadius: '50%', 
+                  backgroundColor: totalRiba > 0 ? '#E5C07B' : '#00DF81', 
+                  boxShadow: `0 0 12px ${totalRiba > 0 ? '#E5C07B' : '#00DF81'}` 
+                }} />
+                {totalRiba > 0 
+                  ? `${results.length} entries flagged for review` 
+                  : 'Ledger is 100% clean'}
+              </div>
+              
               <div style={{ marginTop: 'auto', paddingTop: '32px' }}>
                 <Link to="/ledger" style={{ color: '#E5C07B', textDecoration: 'none', fontSize: '1rem', fontWeight: 500, borderBottom: '1px solid rgba(229,192,123,0.3)', paddingBottom: '4px', transition: 'border-color 0.3s' }} onMouseEnter={(e) => e.currentTarget.style.borderColor = '#E5C07B'} onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(229,192,123,0.3)'}>
                   View Detailed Ledger →

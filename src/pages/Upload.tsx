@@ -4,6 +4,7 @@ import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useParser } from '../context/ParserContext';
+import Processing from '../components/Processing';
 
 const shine = keyframes`
   0% { left: -100%; }
@@ -306,20 +307,58 @@ const BtnCancel = styled.button`
   }
 `;
 
+const ModalLoadingOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(10, 15, 13, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+`;
+
 export default function Upload() {
   const { results, parsing, passwordRequired, passwordError, rawText, parseFile, submitPassword, cancelPassword } = useParser();
   const [fileName, setFileName] = useState<string | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const [isUnlockLoading, setIsUnlockLoading] = useState(false);
   const [pw, setPw] = useState('');
   const navigate = useNavigate();
 
+  const showLoading = isScanning || parsing;
 
- 
+  const minLoadingMs = 1800;
+
+  const handleUnlockWithPassword = useCallback(async () => {
+    if (!pw.trim()) return;
+    setIsUnlockLoading(true);
+    const minDelay = new Promise((r) => setTimeout(r, minLoadingMs));
+    try {
+      await Promise.all([submitPassword(pw), minDelay]);
+    } finally {
+      setIsUnlockLoading(false);
+    }
+  }, [pw, submitPassword]);
+
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const f = acceptedFiles[0];
     if (!f) return;
     setFileName(f.name);
-    const result= await parseFile(f);
-    console.log(result) // Pass it to the Context!
+    setIsScanning(true);
+
+    // Ensure loading UI has time to paint before we start heavy work
+    await new Promise((r) => setTimeout(r, 100));
+
+    const minLoadingMs = 3800;
+    const minDelay = new Promise((r) => setTimeout(r, minLoadingMs));
+
+    try {
+      await Promise.all([parseFile(f), minDelay]);
+    } finally {
+      setIsScanning(false);
+    }
   }, [parseFile]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -363,16 +402,16 @@ export default function Upload() {
                 <DropText>Drag & Drop your statement</DropText>
                 <DropSubText>or click to browse PDF files</DropSubText>
               </motion.div>
-            ) : parsing ? (
+            ) : showLoading ? (
               <motion.div
                 key="processing"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
               >
-                <div style={{ color: '#8C9A8E', marginTop: '20px', textAlign: 'center', fontWeight: 300 }}>
-                  Reading PDF...
-                </div>
+                <Processing fileName={fileName} />
               </motion.div>
             ) : (
               <VerifiedCard
@@ -446,32 +485,37 @@ export default function Upload() {
               exit={{ y: 20, opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => e.stopPropagation()}
+              style={{ position: 'relative' }}
             >
               <ModalTitle>PDF Password Required</ModalTitle>
               <ModalText>
                 This statement is encrypted by your bank. Enter the password so we can read it locally.
               </ModalText>
-              
+
               <PasswordInput
                 type="password"
                 placeholder="Enter PDF password..."
                 value={pw}
                 onChange={(e) => setPw(e.target.value)}
-                onKeyDown={async (e) => {
-                  if (e.key === 'Enter' ) {
-                    await submitPassword(pw);
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleUnlockWithPassword();
                   }
                 }}
                 autoFocus
               />
               <ErrorText>{passwordError || ''}</ErrorText>
-              
+
               <ModalButtonGroup>
-              <BtnCancel onClick={() => { 
-                  cancelPassword(); 
-                  setPw(''); 
-                  setFileName(null); 
-                }}>
+                <BtnCancel
+                  onClick={() => {
+                    cancelPassword();
+                    setPw('');
+                    setFileName(null);
+                    setIsScanning(false);
+                  }}
+                >
                   Cancel
                 </BtnCancel>
                 <ActionBtn
@@ -479,13 +523,28 @@ export default function Upload() {
                   style={{ marginTop: 0, padding: '12px 24px' }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => {
-                    submitPassword(pw); 
-                  }}
+                  onClick={() => handleUnlockWithPassword()}
                 >
                   Unlock File
                 </ActionBtn>
               </ModalButtonGroup>
+
+              {(isUnlockLoading || (parsing && passwordRequired)) && (
+                <ModalLoadingOverlay>
+                  <Processing fileName={fileName} />
+                  <BtnCancel
+                    onClick={() => {
+                      cancelPassword();
+                      setPw('');
+                      setFileName(null);
+                      setIsUnlockLoading(false);
+                    }}
+                    style={{ marginTop: 16 }}
+                  >
+                    Cancel
+                  </BtnCancel>
+                </ModalLoadingOverlay>
+              )}
             </ModalCard>
           </ModalBackdrop>
         )}
