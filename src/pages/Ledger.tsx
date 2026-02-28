@@ -20,12 +20,19 @@ const float = keyframes`
 // --- STYLING (Ultra-Premium Midnight Oasis) ---
 const PageWrapper = styled.div`
   min-height: 100vh;
-  padding-top: 80px;
-  padding-bottom: 4rem;
+  padding: 80px 0 4rem;
   background-color: transparent;
   color: #F4F4F5;
   font-family: 'Outfit', sans-serif;
   position: relative;
+
+  @media (max-width: 768px) {
+    padding: 72px 0 3.5rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 64px 0 3rem;
+  }
 `;
 
 // Ambient glow behind the ledger
@@ -45,6 +52,10 @@ const ContentZ = styled.div`
   max-width: 1060px;
   margin: 0 auto;
   padding: 0 1.5rem;
+
+  @media (max-width: 480px) {
+    padding: 0 1.1rem;
+  }
 `;
 
 const Header = styled.div`
@@ -61,6 +72,14 @@ const Title = styled.h1`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 4px 20px rgba(229, 192, 123, 0.15);
+
+  @media (max-width: 768px) {
+    font-size: 2.3rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 2rem;
+  }
 `;
 
 const Subtitle = styled.p`
@@ -68,6 +87,10 @@ const Subtitle = styled.p`
   font-size: 1.1rem;
   margin: 0;
   font-weight: 300;
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
 `;
 
 const Card = styled(motion.div)`
@@ -97,7 +120,7 @@ const Table = styled.table`
 
 const Th = styled.th`
   text-align: left;
-  padding: 24px 28px;
+  padding: 20px 24px;
   color: #8C9A8E;
   font-size: 0.85rem;
   text-transform: uppercase;
@@ -105,6 +128,11 @@ const Th = styled.th`
   font-weight: 500;
   border-bottom: 1px solid rgba(229, 192, 123, 0.15);
   background: rgba(0, 0, 0, 0.2); /* Slight darkening for header */
+
+  @media (max-width: 600px) {
+    padding: 16px 18px;
+    font-size: 0.8rem;
+  }
 `;
 
 const Tr = styled(motion.tr)<{ $isExcluded: boolean }>`
@@ -129,7 +157,7 @@ const Tr = styled(motion.tr)<{ $isExcluded: boolean }>`
 `;
 
 const Td = styled.td`
-  padding: 22px 28px;
+  padding: 18px 24px;
   border-bottom: 1px solid rgba(229, 192, 123, 0.05);
   font-size: 1rem;
   font-weight: 400;
@@ -137,6 +165,11 @@ const Td = styled.td`
   &.amount {
     font-weight: 500;
     font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 600px) {
+    padding: 16px 18px;
+    font-size: 0.95rem;
   }
 `;
 
@@ -161,11 +194,19 @@ const ExcludeBtn = styled.button<{ $isExcluded: boolean }>`
 
 // --- EMPTY STATE & BUTTONS ---
 const EmptyState = styled.div`
-  padding: 8rem 2rem;
+  padding: 6.5rem 2rem;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  @media (max-width: 768px) {
+    padding: 5.5rem 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 4.5rem 1.25rem;
+  }
 `;
 
 const FloatingIcon = styled.div`

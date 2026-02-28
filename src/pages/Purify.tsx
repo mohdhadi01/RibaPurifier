@@ -16,13 +16,20 @@ const shine = keyframes`
 // --- STYLING (Ultra-Premium Midnight Oasis) ---
 const PageWrapper = styled.div`
   min-height: 100vh;
-  padding-top: 80px;
-  padding-bottom: 4rem;
+  padding: 80px 0 4rem;
   background-color: transparent;
   color: #F4F4F5;
   font-family: 'Outfit', sans-serif;
   position: relative;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 72px 0 3.5rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 64px 0 3rem;
+  }
 `;
 
 // Deep ambient spiritual glow
@@ -44,11 +51,19 @@ const ContentZ = styled.div`
   max-width: 1060px;
   margin: 0 auto;
   padding: 0 1.5rem;
+
+  @media (max-width: 480px) {
+    padding: 0 1.1rem;
+  }
 `;
 
 const Header = styled.div`
   text-align: center;
   margin-bottom: 3.5rem;
+
+  @media (max-width: 768px) {
+    margin-bottom: 3rem;
+  }
 `;
 
 const Title = styled.h1`
@@ -62,6 +77,14 @@ const Title = styled.h1`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 4px 20px rgba(229, 192, 123, 0.15);
+
+  @media (max-width: 768px) {
+    font-size: 2.5rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 2.1rem;
+  }
 `;
 
 const Subtitle = styled.p`
@@ -71,6 +94,10 @@ const Subtitle = styled.p`
   margin: 0 auto;
   line-height: 1.6;
   font-weight: 300;
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
 `;
 
 // --- HIGHLIGHT CARD ---
@@ -87,6 +114,12 @@ const BalanceCard = styled(motion.div)`
   box-shadow: 
     0 40px 80px rgba(0, 0, 0, 0.4), 
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  @media (max-width: 480px) {
+    padding: 26px 22px;
+    border-radius: 26px;
+    margin-bottom: 3rem;
+  }
 `;
 
 const BalanceLabel = styled.div`
@@ -107,6 +140,14 @@ const BalanceAmount = styled.div`
   font-family: 'Satoshi', 'Outfit', sans-serif;
   font-variant-numeric: tabular-nums;
   letter-spacing: -1px;
+
+  @media (max-width: 768px) {
+    font-size: 3rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 2.6rem;
+  }
 `;
 
 // --- CHARITY GRID ---
@@ -114,6 +155,11 @@ const Grid = styled(motion.div)`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 28px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
 `;
 
 const CharityCard = styled(motion.div)`
@@ -131,6 +177,11 @@ const CharityCard = styled(motion.div)`
     border-color: rgba(229, 192, 123, 0.4);
     transform: translateY(-6px);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  @media (max-width: 480px) {
+    padding: 26px 22px;
+    border-radius: 22px;
   }
 `;
 

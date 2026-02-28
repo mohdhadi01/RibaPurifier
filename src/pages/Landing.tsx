@@ -39,6 +39,15 @@ const PageWrapper = styled.div`
   padding: 2rem 1.5rem;
   position: relative;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 1.75rem 1.25rem 2.25rem;
+    align-items: flex-start;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1.5rem 1rem 2rem;
+  }
 `;
 
 const AmbientGlow = styled.div`
@@ -161,6 +170,16 @@ const Right = styled(motion.div)`
   max-width: 500px;
   height: 500px;
   perspective: 1000px; /* Gives the 3D pop effect */
+
+  @media (max-width: 768px) {
+    height: 420px;
+    max-width: 420px;
+  }
+
+  @media (max-width: 480px) {
+    height: 380px;
+    max-width: 360px;
+  }
 `;
 
 const DocumentBackdrop = styled.div`
@@ -172,6 +191,18 @@ const DocumentBackdrop = styled.div`
   border-radius: 24px;
   transform: rotate(-4deg) translate(-20px, 20px);
   z-index: 1;
+
+  @media (max-width: 768px) {
+    width: 300px;
+    height: 380px;
+  }
+
+  @media (max-width: 480px) {
+    width: 260px;
+    height: 340px;
+    border-radius: 20px;
+    transform: rotate(-4deg) translate(-14px, 18px);
+  }
 `;
 
 const GlassDocument = styled.div`
@@ -190,6 +221,20 @@ const GlassDocument = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  @media (max-width: 768px) {
+    width: 320px;
+    height: 400px;
+    padding: 26px 20px;
+    border-radius: 22px;
+  }
+
+  @media (max-width: 480px) {
+    width: 280px;
+    height: 360px;
+    padding: 22px 18px;
+    border-radius: 20px;
+  }
 `;
 
 // The Golden Scanner Line

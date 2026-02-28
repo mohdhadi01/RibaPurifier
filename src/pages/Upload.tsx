@@ -27,7 +27,7 @@ const pulseGlow = keyframes`
 // --- STYLING (Ultra-Premium Midnight Oasis) ---
 const PageWrapper = styled.div`
   min-height: calc(100vh - 80px);
-  padding-top: 60px;
+  padding: 60px 1.5rem 40px;
   background-color: transparent;
   display: flex;
   flex-direction: column;
@@ -35,6 +35,14 @@ const PageWrapper = styled.div`
   font-family: 'Outfit', sans-serif;
   color: #F4F4F5;
   position: relative;
+
+  @media (max-width: 768px) {
+    padding: 56px 1.25rem 32px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 52px 1rem 28px;
+  }
 `;
 
 // Ambient glow directly behind the drop zone
@@ -48,12 +56,28 @@ const AmbientGlow = styled.div`
   background: radial-gradient(ellipse, rgba(229, 192, 123, 0.06) 0%, rgba(10, 15, 13, 0) 70%);
   z-index: -1;
   pointer-events: none;
+
+  @media (max-width: 768px) {
+    width: 520px;
+    height: 380px;
+    top: 12%;
+  }
+
+  @media (max-width: 480px) {
+    width: 420px;
+    height: 320px;
+    top: 10%;
+  }
 `;
 
 const Header = styled.div`
   text-align: center;
   margin-bottom: 3.5rem;
   z-index: 1;
+
+  @media (max-width: 768px) {
+    margin-bottom: 2.75rem;
+  }
 `;
 
 const Title = styled.h1`
@@ -68,6 +92,14 @@ const Title = styled.h1`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 4px 20px rgba(229, 192, 123, 0.15);
+
+  @media (max-width: 768px) {
+    font-size: 2.4rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 2.1rem;
+  }
 `;
 
 const Subtitle = styled.p`
@@ -77,6 +109,10 @@ const Subtitle = styled.p`
   line-height: 1.6;
   margin: 0 auto;
   font-weight: 300;
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
 `;
 
 // --- DRAG AND DROP ZONE ---
@@ -112,6 +148,19 @@ const DropZone = styled(motion.div)<{ $isDragActive: boolean; $hasFile: boolean 
     transform: translateY(-4px);
     box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
+
+  @media (max-width: 768px) {
+    min-height: 300px;
+    padding: 28px 24px;
+    border-radius: 28px;
+  }
+
+  @media (max-width: 480px) {
+    max-width: 100%;
+    min-height: 260px;
+    padding: 24px 18px;
+    border-radius: 24px;
+  }
 `;
 
 const IconWrapper = styled.div<{ $isDragActive: boolean }>`
@@ -131,6 +180,16 @@ const IconWrapper = styled.div<{ $isDragActive: boolean }>`
   svg {
     width: 36px;
     height: 36px;
+  }
+
+  @media (max-width: 480px) {
+    width: 72px;
+    height: 72px;
+
+    svg {
+      width: 30px;
+      height: 30px;
+    }
   }
 `;
 

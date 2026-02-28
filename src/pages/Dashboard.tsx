@@ -19,13 +19,20 @@ const float = keyframes`
 
 const PageWrapper = styled.div`
   min-height: calc(100vh - 80px);
-  padding-top: 40px;
-  /* padding-bottom: 4rem; */
+  padding: 40px 0 40px;
   background-color: transparent;
   position: relative;
   overflow: hidden;
   color: #F4F4F5;
   font-family: 'Outfit', sans-serif;
+
+  @media (max-width: 768px) {
+    padding: 32px 0 32px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 28px 0 28px;
+  }
 `;
 
 // Deep ambient spiritual glow
@@ -47,6 +54,10 @@ const ContentZ = styled.div`
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 1.5rem;
+
+  @media (max-width: 480px) {
+    padding: 0 1.1rem;
+  }
 `;
 
 const Grid = styled(motion.div)`
@@ -56,6 +67,9 @@ const Grid = styled(motion.div)`
   align-items: start;
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
+  }
+  @media (max-width: 600px) {
+    gap: 20px;
   }
 `;
 
@@ -85,6 +99,26 @@ const Card = styled(motion.div)`
       0 50px 100px rgba(0, 0, 0, 0.5), 
       inset 0 1px 0 rgba(229, 192, 123, 0.1);
   }
+
+  @media (max-width: 768px) {
+    padding: 28px 22px;
+    border-radius: 28px;
+
+    &.arch {
+      border-radius: 80px 80px 28px 28px;
+      padding-left: 28px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 24px 18px;
+    border-radius: 24px;
+
+    &.arch {
+      border-radius: 64px 64px 24px 24px;
+      padding-left: 22px;
+    }
+  }
 `;
 
 const Title = styled.div`
@@ -110,6 +144,14 @@ const BigAmount = styled.div`
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
   text-shadow: 0 4px 20px rgba(229, 192, 123, 0.15);
+
+  @media (max-width: 768px) {
+    font-size: 3.2rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 2.7rem;
+  }
 `;
 
 const HalalAmount = styled(BigAmount)`
@@ -119,6 +161,10 @@ const HalalAmount = styled(BigAmount)`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
+
+  @media (max-width: 768px) {
+    font-size: 2.4rem;
+  }
 `;
 
 // --- LUXURY BUTTONS ---
@@ -174,11 +220,19 @@ const SecondaryAction = styled(motion.button)`
 
 // --- EMPTY STATE STYLING ---
 const EmptyContainer = styled(motion.div)`
-  padding: 80px 0;
+  padding: 72px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 56px 0;
+  }
+
+  @media (max-width: 480px) {
+    padding: 48px 0;
+  }
 `;
 
 const GeometricIcon = styled.div`
@@ -212,6 +266,14 @@ const EmptyTitle = styled.h2`
   background: linear-gradient(135deg, #F4F4F5 0%, #E5C07B 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+
+  @media (max-width: 768px) {
+    font-size: 2.4rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 2.1rem;
+  }
 `;
 
 const EmptyText = styled.p`
