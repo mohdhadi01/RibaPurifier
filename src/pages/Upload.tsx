@@ -35,13 +35,14 @@ const PageWrapper = styled.div`
   font-family: 'Outfit', sans-serif;
   color: #F4F4F5;
   position: relative;
+  overflow-x: hidden; /* CRITICAL: prevents horizontal scroll from glow */
 
   @media (max-width: 768px) {
     padding: 56px 1.25rem 32px;
   }
 
   @media (max-width: 480px) {
-    padding: 52px 1rem 28px;
+    padding: 40px 1rem 28px;
   }
 `;
 
@@ -58,14 +59,8 @@ const AmbientGlow = styled.div`
   pointer-events: none;
 
   @media (max-width: 768px) {
-    width: 520px;
-    height: 380px;
-    top: 12%;
-  }
-
-  @media (max-width: 480px) {
-    width: 420px;
-    height: 320px;
+    width: 100vw;
+    height: 100vw;
     top: 10%;
   }
 `;
@@ -78,6 +73,10 @@ const Header = styled.div`
   @media (max-width: 768px) {
     margin-bottom: 2.75rem;
   }
+
+  @media (max-width: 480px) {
+    margin-bottom: 2rem;
+  }
 `;
 
 const Title = styled.h1`
@@ -87,7 +86,6 @@ const Title = styled.h1`
   margin: 0 0 16px 0;
   letter-spacing: -0.5px;
   
-  /* Metallic Gradient Text */
   background: linear-gradient(135deg, #F4F4F5 0%, #E5C07B 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -99,6 +97,7 @@ const Title = styled.h1`
 
   @media (max-width: 480px) {
     font-size: 2.1rem;
+    margin: 0 0 12px 0;
   }
 `;
 
@@ -112,6 +111,7 @@ const Subtitle = styled.p`
 
   @media (max-width: 480px) {
     font-size: 1rem;
+    padding: 0 10px;
   }
 `;
 
@@ -121,7 +121,6 @@ const DropZone = styled(motion.div)<{ $isDragActive: boolean; $hasFile: boolean 
   max-width: 680px;
   min-height: 360px;
   
-  /* Beveled Glassmorphism */
   background: linear-gradient(145deg, rgba(18, 28, 23, 0.5) 0%, rgba(10, 15, 13, 0.8) 100%);
   backdrop-filter: blur(24px) saturate(120%);
   -webkit-backdrop-filter: blur(24px) saturate(120%);
@@ -158,7 +157,7 @@ const DropZone = styled(motion.div)<{ $isDragActive: boolean; $hasFile: boolean 
   @media (max-width: 480px) {
     max-width: 100%;
     min-height: 260px;
-    padding: 24px 18px;
+    padding: 32px 20px;
     border-radius: 24px;
   }
 `;
@@ -185,10 +184,11 @@ const IconWrapper = styled.div<{ $isDragActive: boolean }>`
   @media (max-width: 480px) {
     width: 72px;
     height: 72px;
+    margin-bottom: 20px;
 
     svg {
-      width: 30px;
-      height: 30px;
+      width: 28px;
+      height: 28px;
     }
   }
 `;
@@ -199,12 +199,22 @@ const DropText = styled.div`
   color: #F4F4F5;
   margin-bottom: 10px;
   letter-spacing: 0.5px;
+  text-align: center;
+
+  @media (max-width: 480px) {
+    font-size: 1.15rem;
+  }
 `;
 
 const DropSubText = styled.div`
   font-size: 1rem;
   color: #8C9A8E;
   font-weight: 300;
+  text-align: center;
+
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+  }
 `;
 
 // --- FILE VERIFIED STATE ---
@@ -213,6 +223,8 @@ const VerifiedCard = styled(motion.div)`
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  width: 100%;
+  min-width: 0;
 `;
 
 const CheckIcon = styled.div`
@@ -227,6 +239,12 @@ const CheckIcon = styled.div`
   font-size: 1.5rem;
   font-weight: bold;
   box-shadow: 0 10px 30px rgba(229, 192, 123, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.5);
+
+  @media (max-width: 480px) {
+    width: 48px;
+    height: 48px;
+    font-size: 1.2rem;
+  }
 `;
 
 const FileName = styled.div`
@@ -234,6 +252,16 @@ const FileName = styled.div`
   color: #E5C07B;
   font-weight: 500;
   letter-spacing: 0.5px;
+  text-align: center;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
 `;
 
 // --- LUXURY BUTTONS ---
@@ -267,28 +295,44 @@ const ActionBtn = styled(motion.button)`
   &:hover {
     box-shadow: 0 15px 35px rgba(229, 192, 123, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
   }
+
+  @media (max-width: 480px) {
+    padding: 12px 24px;
+    font-size: 1rem;
+    width: 100%;
+  }
 `;
 
 // --- PASSWORD MODAL ---
 const ModalBackdrop = styled(motion.div)`
   position: fixed;
   inset: 0;
-  background: rgba(10, 15, 13, 0.6);
+  background: rgba(10, 15, 13, 0.75);
   backdrop-filter: blur(16px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
+  padding: 16px;
 `;
 
 const ModalCard = styled(motion.div)`
-  background: linear-gradient(145deg, rgba(20, 30, 25, 0.9) 0%, rgba(15, 20, 18, 0.95) 100%);
+  background: linear-gradient(145deg, rgba(20, 30, 25, 0.95) 0%, rgba(15, 20, 18, 0.98) 100%);
   border: 1px solid rgba(229, 192, 123, 0.15);
   border-radius: 28px;
   padding: 40px;
   width: 100%;
   max-width: 460px;
   box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  
+  /* Keyboard safe scrolling on mobile */
+  max-height: 90vh;
+  overflow-y: auto;
+
+  @media (max-width: 480px) {
+    padding: 28px 20px;
+    border-radius: 24px;
+  }
 `;
 
 const ModalTitle = styled.h3`
@@ -300,6 +344,10 @@ const ModalTitle = styled.h3`
   background: linear-gradient(135deg, #F4F4F5 0%, #E5C07B 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+
+  @media (max-width: 480px) {
+    font-size: 1.5rem;
+  }
 `;
 
 const ModalText = styled.p`
@@ -307,6 +355,11 @@ const ModalText = styled.p`
   font-size: 1rem;
   line-height: 1.6;
   margin-bottom: 28px;
+
+  @media (max-width: 480px) {
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+  }
 `;
 
 const PasswordInput = styled.input`
@@ -322,6 +375,7 @@ const PasswordInput = styled.input`
   margin-bottom: 8px;
   box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.5);
   transition: all 0.3s ease;
+  box-sizing: border-box;
 
   &::placeholder {
     color: rgba(140, 154, 142, 0.5);
@@ -333,13 +387,18 @@ const PasswordInput = styled.input`
     border-color: rgba(229, 192, 123, 0.5);
     background: rgba(0, 0, 0, 0.6);
   }
+
+  @media (max-width: 480px) {
+    padding: 14px 16px;
+    font-size: 1rem;
+  }
 `;
 
 const ErrorText = styled.div`
   color: #EF4444; 
   font-size: 0.9rem;
   margin-bottom: 20px;
-  height: 20px;
+  min-height: 20px;
   font-weight: 500;
 `;
 
@@ -347,6 +406,11 @@ const ModalButtonGroup = styled.div`
   display: flex;
   gap: 16px;
   justify-content: flex-end;
+
+  @media (max-width: 480px) {
+    flex-direction: column-reverse; /* Stack buttons, cancel on bottom */
+    gap: 12px;
+  }
 `;
 
 const BtnCancel = styled.button`
@@ -364,6 +428,11 @@ const BtnCancel = styled.button`
     background: rgba(140, 154, 142, 0.1);
     color: #F4F4F5;
   }
+
+  @media (max-width: 480px) {
+    width: 100%;
+    padding: 12px;
+  }
 `;
 
 const ModalLoadingOverlay = styled.div`
@@ -376,6 +445,9 @@ const ModalLoadingOverlay = styled.div`
   align-items: center;
   justify-content: center;
   padding: 20px;
+  z-index: 10;
+  min-width: 0;
+  overflow: hidden;
 `;
 
 export default function Upload() {
@@ -388,12 +460,11 @@ export default function Upload() {
 
   const showLoading = isScanning || parsing;
 
-  const minLoadingMs = 1800;
-
   const handleUnlockWithPassword = useCallback(async () => {
     if (!pw.trim()) return;
     setIsUnlockLoading(true);
-    const minDelay = new Promise((r) => setTimeout(r, minLoadingMs));
+    // Artificially slightly extend loading purely for smooth UX transition
+    const minDelay = new Promise((r) => setTimeout(r, 1200));
     try {
       await Promise.all([submitPassword(pw), minDelay]);
     } finally {
@@ -410,7 +481,7 @@ export default function Upload() {
     // Ensure loading UI has time to paint before we start heavy work
     await new Promise((r) => setTimeout(r, 100));
 
-    const minLoadingMs = 3800;
+    const minLoadingMs = 3000;
     const minDelay = new Promise((r) => setTimeout(r, minLoadingMs));
 
     try {
@@ -468,7 +539,7 @@ export default function Upload() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', minWidth: 0 }}
               >
                 <Processing fileName={fileName} />
               </motion.div>
@@ -480,7 +551,7 @@ export default function Upload() {
                 transition={{ type: 'spring', stiffness: 300, damping: 25 }}
               >
                 <CheckIcon>✓</CheckIcon>
-                <FileName>{fileName}</FileName>
+                <FileName title={fileName ?? undefined}>{fileName}</FileName>
                 <div style={{ color: '#8C9A8E', fontSize: '1rem', fontWeight: 300, maxWidth: 420, textAlign: 'center' }}>
                   Statement analyzed securely. We detected{' '}
                   <strong style={{ color: '#F4F4F5', fontWeight: 500 }}>{results.length}</strong> potential interest/Riba transaction{results.length === 1 ? '' : 's'}.
@@ -493,6 +564,7 @@ export default function Upload() {
                       e.stopPropagation();
                       navigate('/dashboard');
                     }}
+                    style={{ marginTop: 16 }}
                   >
                     View insights
                   </ActionBtn>
@@ -503,11 +575,9 @@ export default function Upload() {
         </DropZone>
       </div>
 
-      {/* Debug view removed for production */}
-
-      {/* PASSWORD PROMPT MODAL (simple wrapper around pdfjs password handling) */}
+      {/* PASSWORD PROMPT MODAL */}
       <AnimatePresence>
-        {passwordRequired  && (
+        {passwordRequired && (
           <ModalBackdrop
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -555,7 +625,7 @@ export default function Upload() {
                 </BtnCancel>
                 <ActionBtn
                   as="button"
-                  style={{ marginTop: 0, padding: '12px 24px' }}
+                  style={{ marginTop: 0 }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleUnlockWithPassword()}

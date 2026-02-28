@@ -38,15 +38,11 @@ const PageWrapper = styled.div`
   background-color: transparent;
   padding: 2rem 1.5rem;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden; /* Prevent horizontal scroll on mobile */
 
   @media (max-width: 768px) {
-    padding: 1.75rem 1.25rem 2.25rem;
+    padding: 1.5rem 1rem 3rem;
     align-items: flex-start;
-  }
-
-  @media (max-width: 480px) {
-    padding: 1.5rem 1rem 2rem;
   }
 `;
 
@@ -60,6 +56,13 @@ const AmbientGlow = styled.div`
   background: radial-gradient(circle, rgba(229, 192, 123, 0.05) 0%, rgba(10, 15, 13, 0) 70%);
   z-index: 0;
   pointer-events: none;
+
+  @media (max-width: 768px) {
+    width: 100vw;
+    height: 100vw;
+    right: 50%;
+    transform: translate(50%, -50%);
+  }
 `;
 
 const Hero = styled(motion.section)`
@@ -75,7 +78,11 @@ const Hero = styled(motion.section)`
   @media (max-width: 900px) {
     flex-direction: column;
     text-align: center;
-    gap: 4rem;
+    gap: 3rem;
+  }
+
+  @media (max-width: 480px) {
+    gap: 2.5rem;
   }
 `;
 
@@ -97,6 +104,11 @@ const ArabicEyebrow = styled.div`
   margin-bottom: 12px;
   letter-spacing: 1px;
   text-shadow: 0 0 20px rgba(229, 192, 123, 0.2);
+
+  @media (max-width: 480px) {
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+  }
 `;
 
 const Title = styled.h1`
@@ -112,7 +124,12 @@ const Title = styled.h1`
   text-shadow: 0 4px 20px rgba(229, 192, 123, 0.15);
 
   @media (max-width: 768px) {
-    font-size: 3rem;
+    font-size: 3.25rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 2.5rem;
+    margin: 0 0 16px 0;
   }
 `;
 
@@ -124,6 +141,12 @@ const Lead = styled.p`
   font-weight: 300;
   margin-bottom: 40px;
   max-width: 480px;
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+    margin-bottom: 32px;
+    padding: 0 10px;
+  }
 `;
 
 const PrimaryCTA = styled(Link)`
@@ -158,6 +181,12 @@ const PrimaryCTA = styled(Link)`
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 15px 35px rgba(229, 192, 123, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
   }
+
+  @media (max-width: 480px) {
+    width: 100%;
+    max-width: 300px; /* Better thumb-tap target on mobile */
+    padding: 16px 24px;
+  }
 `;
 
 // --- RIGHT COLUMN: THE DYNAMIC STATEMENT SCANNER ---
@@ -169,16 +198,15 @@ const Right = styled(motion.div)`
   width: 100%;
   max-width: 500px;
   height: 500px;
-  perspective: 1000px; /* Gives the 3D pop effect */
+  perspective: 1000px;
 
   @media (max-width: 768px) {
     height: 420px;
-    max-width: 420px;
+    max-width: 100%;
   }
 
   @media (max-width: 480px) {
     height: 380px;
-    max-width: 360px;
   }
 `;
 
@@ -198,10 +226,11 @@ const DocumentBackdrop = styled.div`
   }
 
   @media (max-width: 480px) {
-    width: 260px;
+    width: 85%; /* Fluid scaling for very small screens */
+    max-width: 280px;
     height: 340px;
     border-radius: 20px;
-    transform: rotate(-4deg) translate(-14px, 18px);
+    transform: rotate(-4deg) translate(-10px, 15px);
   }
 `;
 
@@ -230,14 +259,15 @@ const GlassDocument = styled.div`
   }
 
   @media (max-width: 480px) {
-    width: 280px;
+    width: 90%; /* Fluid scaling */
+    max-width: 300px;
     height: 360px;
-    padding: 22px 18px;
+    padding: 20px 16px;
     border-radius: 20px;
+    gap: 12px;
   }
 `;
 
-// The Golden Scanner Line
 const ScannerLine = styled.div`
   position: absolute;
   left: 0;
@@ -270,6 +300,13 @@ const DocHeader = styled.div`
     text-transform: uppercase;
     letter-spacing: 1px;
   }
+
+  @media (max-width: 480px) {
+    margin-bottom: 8px;
+    padding-bottom: 12px;
+    div:first-child { font-size: 0.9rem; }
+    div:last-child { font-size: 0.7rem; }
+  }
 `;
 
 const MockRow = styled.div<{ $isRiba?: boolean }>`
@@ -282,7 +319,7 @@ const MockRow = styled.div<{ $isRiba?: boolean }>`
   border-radius: 12px;
   font-family: 'Outfit', sans-serif;
   animation: ${({ $isRiba }) => ($isRiba ? pulseHighlight : 'none')} 4s infinite;
-  animation-delay: 2.5s; /* Syncs with when the scanner hits it */
+  animation-delay: 2.5s; 
 
   .desc {
     font-size: 0.95rem;
@@ -294,6 +331,13 @@ const MockRow = styled.div<{ $isRiba?: boolean }>`
     color: ${({ $isRiba }) => ($isRiba ? '#E5C07B' : '#F4F4F5')};
     font-weight: 500;
     font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px 12px;
+    border-radius: 8px;
+    .desc { font-size: 0.85rem; }
+    .amount { font-size: 0.85rem; }
   }
 `;
 
@@ -316,6 +360,20 @@ const FloatingExtractionCard = styled(motion.div)`
   @media (max-width: 768px) {
     right: 10px;
     bottom: -10px;
+    padding: 16px 20px;
+  }
+
+  @media (max-width: 480px) {
+    right: auto; /* Allow centering on extremely small screens */
+    left: 50%;
+    transform: translateX(-50%); /* Centered visually to avoid bleeding */
+    bottom: -15px;
+    padding: 12px 16px;
+    border-radius: 16px;
+    
+    /* Override animation safely to keep the X-transform while floating */
+    animation: none; 
+    /* Static float fallback for perfect mobile alignment */
   }
 `;
 
@@ -337,6 +395,10 @@ const ExtractLabel = styled.div`
     border-radius: 50%;
     box-shadow: 0 0 8px #E5C07B;
   }
+
+  @media (max-width: 480px) {
+    font-size: 0.7rem;
+  }
 `;
 
 const ExtractAmount = styled.div`
@@ -344,6 +406,10 @@ const ExtractAmount = styled.div`
   font-weight: 700;
   color: #E5C07B;
   font-family: 'Satoshi', 'Outfit', sans-serif;
+
+  @media (max-width: 480px) {
+    font-size: 1.25rem;
+  }
 `;
 
 export default function Landing() {

@@ -21,14 +21,14 @@ const PageWrapper = styled.div`
   color: #F4F4F5;
   font-family: 'Outfit', sans-serif;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden; /* CRITICAL: Prevents horizontal scrolling on mobile */
 
   @media (max-width: 768px) {
-    padding: 72px 0 3.5rem;
+    padding: 64px 0 3.5rem;
   }
 
   @media (max-width: 480px) {
-    padding: 64px 0 3rem;
+    padding: 40px 0 3rem;
   }
 `;
 
@@ -43,6 +43,11 @@ const AmbientGlow = styled.div`
   background: radial-gradient(ellipse, rgba(229, 192, 123, 0.06) 0%, rgba(10, 15, 13, 0) 70%);
   z-index: 0;
   pointer-events: none;
+
+  @media (max-width: 768px) {
+    width: 100vw;
+    height: 100vw;
+  }
 `;
 
 const ContentZ = styled.div`
@@ -64,6 +69,10 @@ const Header = styled.div`
   @media (max-width: 768px) {
     margin-bottom: 3rem;
   }
+
+  @media (max-width: 480px) {
+    margin-bottom: 2.5rem;
+  }
 `;
 
 const Title = styled.h1`
@@ -72,7 +81,6 @@ const Title = styled.h1`
   font-weight: 600;
   margin: 0 0 16px 0;
   letter-spacing: -0.5px;
-  /* Metallic Gradient Text */
   background: linear-gradient(135deg, #F4F4F5 0%, #E5C07B 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -84,6 +92,7 @@ const Title = styled.h1`
 
   @media (max-width: 480px) {
     font-size: 2.1rem;
+    margin: 0 0 12px 0;
   }
 `;
 
@@ -97,6 +106,7 @@ const Subtitle = styled.p`
 
   @media (max-width: 480px) {
     font-size: 1rem;
+    padding: 0 10px;
   }
 `;
 
@@ -116,9 +126,10 @@ const BalanceCard = styled(motion.div)`
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
   @media (max-width: 480px) {
-    padding: 26px 22px;
-    border-radius: 26px;
+    padding: 24px 20px;
+    border-radius: 24px;
     margin-bottom: 3rem;
+    width: 100%;
   }
 `;
 
@@ -129,6 +140,11 @@ const BalanceLabel = styled.div`
   font-size: 0.85rem;
   margin-bottom: 12px;
   font-weight: 500;
+
+  @media (max-width: 480px) {
+    font-size: 0.75rem;
+    margin-bottom: 8px;
+  }
 `;
 
 const BalanceAmount = styled.div`
@@ -140,13 +156,14 @@ const BalanceAmount = styled.div`
   font-family: 'Satoshi', 'Outfit', sans-serif;
   font-variant-numeric: tabular-nums;
   letter-spacing: -1px;
+  white-space: nowrap; /* Prevents awkward wrapping on large numbers */
 
   @media (max-width: 768px) {
     font-size: 3rem;
   }
 
   @media (max-width: 480px) {
-    font-size: 2.6rem;
+    font-size: 2.4rem;
   }
 `;
 
@@ -158,7 +175,7 @@ const Grid = styled(motion.div)`
 
   @media (max-width: 480px) {
     grid-template-columns: 1fr;
-    gap: 22px;
+    gap: 20px;
   }
 `;
 
@@ -180,8 +197,8 @@ const CharityCard = styled(motion.div)`
   }
 
   @media (max-width: 480px) {
-    padding: 26px 22px;
-    border-radius: 22px;
+    padding: 24px 20px;
+    border-radius: 20px;
   }
 `;
 
@@ -191,6 +208,10 @@ const CharityTitle = styled.h3`
   margin: 0 0 12px 0;
   font-weight: 500;
   letter-spacing: 0.5px;
+
+  @media (max-width: 480px) {
+    font-size: 1.2rem;
+  }
 `;
 
 const CharityDesc = styled.p`
@@ -200,6 +221,11 @@ const CharityDesc = styled.p`
   margin: 0 0 32px 0;
   flex-grow: 1;
   font-weight: 300;
+
+  @media (max-width: 480px) {
+    font-size: 0.95rem;
+    margin: 0 0 24px 0;
+  }
 `;
 
 const DonateBtn = styled.button`
@@ -221,18 +247,23 @@ const DonateBtn = styled.button`
     border-color: #E5C07B;
     box-shadow: 0 0 20px rgba(229, 192, 123, 0.2);
   }
+
+  @media (max-width: 480px) {
+    padding: 12px;
+  }
 `;
 
 // --- MODAL STYLING ---
 const ModalBackdrop = styled(motion.div)`
   position: fixed;
   inset: 0;
-  background: rgba(10, 15, 13, 0.7);
+  background: rgba(10, 15, 13, 0.75);
   backdrop-filter: blur(16px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
+  padding: 16px; /* Prevents modal from hitting screen edges on mobile */
 `;
 
 const ModalBody = styled(motion.div)`
@@ -244,6 +275,13 @@ const ModalBody = styled(motion.div)`
   max-width: 460px;
   text-align: center;
   box-shadow: 0 50px 100px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+  max-height: 90vh; /* Prevents overflow */
+  overflow-y: auto; /* Allows scrolling inside modal if phone is very small */
+
+  @media (max-width: 480px) {
+    padding: 32px 24px;
+    border-radius: 24px;
+  }
 `;
 
 const QRWrapper = styled.div`
@@ -253,6 +291,12 @@ const QRWrapper = styled.div`
   display: inline-block;
   margin: 32px 0;
   box-shadow: 0 0 40px rgba(229, 192, 123, 0.15);
+
+  @media (max-width: 480px) {
+    padding: 16px;
+    margin: 24px 0;
+    border-radius: 16px;
+  }
 `;
 
 const ActionBtn = styled.button`
@@ -266,7 +310,7 @@ const ActionBtn = styled.button`
   font-weight: 600;
   font-size: 1.05rem;
   cursor: pointer;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   overflow: hidden;
   box-shadow: 0 10px 25px rgba(229, 192, 123, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.4);
   font-family: 'Outfit', sans-serif;
@@ -287,11 +331,16 @@ const ActionBtn = styled.button`
     box-shadow: 0 15px 35px rgba(229, 192, 123, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
   }
+
+  @media (max-width: 480px) {
+    padding: 14px;
+    font-size: 1rem;
+  }
 `;
 
 const CancelBtn = styled.button`
   width: 100%;
-  padding: 14px;
+  padding: 12px;
   background: transparent;
   color: #8C9A8E;
   border: none;
@@ -314,6 +363,10 @@ const SuccessText = styled(motion.div)`
   -webkit-text-fill-color: transparent;
   margin-bottom: 16px;
   font-weight: 500;
+
+  @media (max-width: 480px) {
+    font-size: 1.8rem;
+  }
 `;
 
 // --- MOCK DATA ---
@@ -414,17 +467,17 @@ export default function Purify() {
               >
                 {!purified ? (
                   <>
-                    <h3 style={{ fontFamily: 'Playfair Display', fontSize: '1.75rem', margin: '0 0 12px 0', color: '#F4F4F5', fontWeight: 500 }}>
+                    <h3 style={{ fontFamily: 'Playfair Display', fontSize: '1.6rem', margin: '0 0 12px 0', color: '#F4F4F5', fontWeight: 500 }}>
                       {selected.title}
                     </h3>
-                    <p style={{ color: '#8C9A8E', fontSize: '1rem', margin: 0, fontWeight: 300, lineHeight: 1.5 }}>
+                    <p style={{ color: '#8C9A8E', fontSize: '0.95rem', margin: 0, fontWeight: 300, lineHeight: 1.5 }}>
                       Scan the code via your UPI or Banking App to securely transfer <strong style={{color: '#E5C07B', fontWeight: 500}}>{formatter.format(totalRiba)}</strong>
                     </p>
                     
                     <QRWrapper>
                       <QRCodeSVG 
                         value={`upi://pay?pa=charity@bank&pn=${encodeURIComponent(selected.title)}&am=${totalRiba}`} 
-                        size={180} 
+                        size={160} 
                         level="H"
                         includeMargin={false}
                       />

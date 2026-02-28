@@ -31,6 +31,9 @@ const Container = styled(motion.div)`
   justify-content: center;
   gap: 24px;
   padding: 20px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 `;
 
 // The Engine Visual
@@ -116,6 +119,10 @@ const FileBadge = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
+  max-width: min(100%, 320px);
+  min-width: 0;
+  overflow: hidden;
   background: rgba(20, 30, 25, 0.6);
   border: 1px solid rgba(229, 192, 123, 0.15);
   padding: 8px 16px;
@@ -125,12 +132,21 @@ const FileBadge = styled.div`
   color: #A1A1AA;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   margin-top: 8px;
+  box-sizing: border-box;
 
   svg {
+    flex-shrink: 0;
     width: 14px;
     height: 14px;
     color: #E5C07B;
   }
+`;
+
+const FileNameText = styled.span`
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 interface ProcessingProps {
@@ -157,11 +173,11 @@ export default function Processing({ fileName }: ProcessingProps) {
       </div>
 
       {fileName && (
-        <FileBadge>
+        <FileBadge title={fileName}>
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          {fileName}
+          <FileNameText>{fileName}</FileNameText>
         </FileBadge>
       )}
     </Container>

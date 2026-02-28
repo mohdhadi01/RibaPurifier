@@ -31,7 +31,7 @@ const PageWrapper = styled.div`
   }
 
   @media (max-width: 480px) {
-    padding: 28px 0 28px;
+    padding: 20px 0 28px;
   }
 `;
 
@@ -46,6 +46,11 @@ const AmbientGlow = styled.div`
   background: radial-gradient(ellipse, rgba(229, 192, 123, 0.05) 0%, rgba(10, 15, 13, 0) 70%);
   z-index: 0;
   pointer-events: none;
+
+  @media (max-width: 768px) {
+    width: 100vw;
+    height: 100vw;
+  }
 `;
 
 const ContentZ = styled.div`
@@ -56,7 +61,7 @@ const ContentZ = styled.div`
   padding: 0 1.5rem;
 
   @media (max-width: 480px) {
-    padding: 0 1.1rem;
+    padding: 0 1rem;
   }
 `;
 
@@ -65,15 +70,18 @@ const Grid = styled(motion.div)`
   grid-template-columns: repeat(3, 1fr);
   gap: 28px;
   align-items: start;
+
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
+    gap: 24px;
   }
-  @media (max-width: 600px) {
-    gap: 20px;
+
+  @media (max-width: 480px) {
+    gap: 16px;
   }
 `;
 
-// Advanced Beveled Glassmorphism Card
+// --- CARDS ---
 const Card = styled(motion.div)`
   background: linear-gradient(145deg, rgba(18, 28, 23, 0.6) 0%, rgba(10, 15, 13, 0.9) 100%);
   backdrop-filter: blur(24px) saturate(120%);
@@ -89,21 +97,34 @@ const Card = styled(motion.div)`
   position: relative;
   overflow: hidden;
 
+  @media (max-width: 768px) {
+    padding: 28px 24px;
+    border-radius: 28px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 24px 20px;
+    border-radius: 24px;
+  }
+`;
+
+// Replaces inline gridColumn span logic for flawless mobile breaking
+const MainCard = styled(Card)`
+  grid-column: span 2;
+  
   &.arch {
-    /* Enhanced Modern Islamic Arch */
     border-radius: 100px 100px 32px 32px;
     padding-left: 40px;
     border-top: 1px solid rgba(229, 192, 123, 0.25);
     background: linear-gradient(145deg, rgba(22, 34, 28, 0.7) 0%, rgba(10, 15, 13, 0.95) 100%);
-    box-shadow: 
-      0 50px 100px rgba(0, 0, 0, 0.5), 
-      inset 0 1px 0 rgba(229, 192, 123, 0.1);
+    box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(229, 192, 123, 0.1);
+  }
+
+  @media (max-width: 900px) {
+    grid-column: 1 / -1; /* Reset to full width on mobile */
   }
 
   @media (max-width: 768px) {
-    padding: 28px 22px;
-    border-radius: 28px;
-
     &.arch {
       border-radius: 80px 80px 28px 28px;
       padding-left: 28px;
@@ -111,16 +132,23 @@ const Card = styled(motion.div)`
   }
 
   @media (max-width: 480px) {
-    padding: 24px 18px;
-    border-radius: 24px;
-
     &.arch {
-      border-radius: 64px 64px 24px 24px;
-      padding-left: 22px;
+      border-radius: 40px 40px 24px 24px; /* Flattens arch slightly for small screens */
+      padding-left: 20px;
     }
   }
 `;
 
+const TableCard = styled(Card)`
+  grid-column: 1 / -1;
+  padding: 32px;
+
+  @media (max-width: 480px) {
+    padding: 24px 16px;
+  }
+`;
+
+// --- TYPOGRAPHY ---
 const Title = styled.div`
   font-family: 'Outfit', sans-serif;
   font-weight: 500;
@@ -128,6 +156,10 @@ const Title = styled.div`
   font-size: 0.95rem;
   letter-spacing: 1.5px;
   text-transform: uppercase;
+
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+  }
 `;
 
 const BigAmount = styled.div`
@@ -136,8 +168,6 @@ const BigAmount = styled.div`
   font-family: 'Satoshi', 'Outfit', sans-serif;
   font-weight: 600;
   letter-spacing: -1px;
-  
-  /* Metallic Gold Gradient Text */
   background: linear-gradient(135deg, #F4F4F5 0%, #E5C07B 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -150,20 +180,8 @@ const BigAmount = styled.div`
   }
 
   @media (max-width: 480px) {
-    font-size: 2.7rem;
-  }
-`;
-
-const HalalAmount = styled(BigAmount)`
-  font-size: 3rem;
-  /* Metallic Silver Gradient Text */
-  background: linear-gradient(135deg, #FFFFFF 0%, #A1A1AA 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
-
-  @media (max-width: 768px) {
-    font-size: 2.4rem;
+    font-size: 2.6rem;
+    margin-top: 12px;
   }
 `;
 
@@ -198,23 +216,11 @@ const ActionBtn = styled(motion.button)`
   &:hover {
     box-shadow: 0 15px 35px rgba(229, 192, 123, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
   }
-`;
 
-const SecondaryAction = styled(motion.button)`
-  padding: 16px 32px;
-  background: rgba(255, 255, 255, 0.03);
-  color: #E5C07B;
-  border: 1px solid rgba(229, 192, 123, 0.2);
-  border-radius: 999px;
-  font-weight: 500;
-  font-size: 1.05rem;
-  cursor: pointer;
-  font-family: 'Outfit', sans-serif;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: rgba(229, 192, 123, 0.08);
-    border-color: rgba(229, 192, 123, 0.4);
+  @media (max-width: 480px) {
+    width: 100%; /* Full width on mobile */
+    padding: 14px 24px;
+    font-size: 1rem;
   }
 `;
 
@@ -231,7 +237,7 @@ const EmptyContainer = styled(motion.div)`
   }
 
   @media (max-width: 480px) {
-    padding: 48px 0;
+    padding: 32px 0;
   }
 `;
 
@@ -256,6 +262,12 @@ const GeometricIcon = styled.div`
     border: 1px solid rgba(229, 192, 123, 0.3);
     transform: rotate(45deg);
   }
+
+  @media (max-width: 480px) {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 32px;
+  }
 `;
 
 const EmptyTitle = styled.h2`
@@ -272,7 +284,7 @@ const EmptyTitle = styled.h2`
   }
 
   @media (max-width: 480px) {
-    font-size: 2.1rem;
+    font-size: 2rem;
   }
 `;
 
@@ -283,14 +295,80 @@ const EmptyText = styled.p`
   font-size: 1.15rem;
   font-weight: 300;
   margin-bottom: 48px;
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+    margin-bottom: 32px;
+    padding: 0 16px;
+  }
 `;
 
 // --- TABLE STYLING ---
+const TableWrapper = styled.div`
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+`;
+
+const StyledTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+  }
+`;
+
+const Th = styled.th`
+  padding: 0 20px 20px 0;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  color: #8C9A8E;
+  text-align: left;
+  border-bottom: 1px solid rgba(229, 192, 123, 0.2);
+
+  &:last-child {
+    text-align: right;
+    padding-right: 0;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0 12px 16px 0;
+    font-size: 0.75rem;
+  }
+`;
+
+const Td = styled.td`
+  padding: 20px 20px 20px 0;
+
+  &:last-child {
+    text-align: right;
+    padding-right: 0;
+  }
+
+  @media (max-width: 480px) {
+    padding: 16px 12px 16px 0; /* Tighter padding for mobile */
+  }
+`;
+
 const Tr = styled(motion.tr)`
   border-bottom: 1px solid rgba(229, 192, 123, 0.1);
   transition: background 0.3s ease;
   &:hover {
     background: rgba(229, 192, 123, 0.03);
+  }
+`;
+
+const ActionWrapper = styled.div`
+  margin-top: auto;
+  padding-top: 40px;
+
+  @media (max-width: 480px) {
+    padding-top: 24px;
+    display: flex;
+    flex-direction: column; /* Stacks button nicely */
   }
 `;
 
@@ -308,11 +386,9 @@ export default function Dashboard() {
   const { results, rawText, totalScanned } = useParser();
   const navigate = useNavigate();
 
-  // Respect exclusions from the ledger across the whole app
   const activeResults = results.filter(r => !r.excluded);
   const totalRiba = activeResults.reduce((sum, r) => sum + (r.amount || 0), 0);
   const recent = activeResults.slice(0, 3);
-  const hasScan = !!rawText;
   const isEmpty = totalRiba === 0 && activeResults.length === 0;
 
   const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' });
@@ -330,15 +406,13 @@ export default function Dashboard() {
               Wealth is a trust. Keeping it pure is an act of mindfulness. 
               Initialize your ledger to identify any non-compliant earnings and begin your purification journey.
             </EmptyText>
-            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: 16, width: '100%', justifyContent: 'center', padding: '0 16px' }}>
               <ActionBtn whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => navigate('/upload')}>
                 Initialize Ledger
               </ActionBtn>
-              
             </div>
           </EmptyContainer>
         ) : results.length === 0 ? (
-          // We have scanned, but no Riba was detected
           <EmptyContainer initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
             <GeometricIcon />
             <EmptyTitle>No Riba Detected</EmptyTitle>
@@ -346,7 +420,7 @@ export default function Dashboard() {
               We scanned your last statement and did not find any lines matching the current interest/Riba patterns.
               You can adjust the detector keywords later if your bank uses different wording.
             </EmptyText>
-            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: 16, width: '100%', justifyContent: 'center', padding: '0 16px' }}>
               <ActionBtn whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => navigate('/upload')}>
                 Scan Another Statement
               </ActionBtn>
@@ -355,35 +429,21 @@ export default function Dashboard() {
         ) : (
           <Grid variants={containerVariants} initial="hidden" animate="show">
             
-            {/* Main Riba Card (Spans 2 cols) */}
-            <Card variants={cardVariants} className="arch" style={{ gridColumn: 'span 2' }}>
+            {/* Main Riba Card */}
+            <MainCard variants={cardVariants} className="arch">
               <Title>Total Riba Identified</Title>
               <BigAmount>{formatter.format(totalRiba)}</BigAmount>
               <div style={{ marginTop: 12, color: '#8C9A8E', fontSize: '1rem', fontWeight: 300 }}>
                 Accumulated across parsed statements. Ready for purification.
               </div>
-              <div style={{ marginTop: 'auto', paddingTop: '40px' }}>
+              <ActionWrapper>
                 <ActionBtn whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => navigate('/purify')}>
                   Purify Wealth Now
                 </ActionBtn>
-              </div>
-            </Card>
+              </ActionWrapper>
+            </MainCard>
 
-            {/* Halal Principal Card */}
-            {/* <Card variants={cardVariants}>
-              <Title>Halal Principal</Title>
-              <HalalAmount>{formatter.format(totalScanned)}</HalalAmount>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '16px', color: '#00DF81', fontWeight: 500 }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#00DF81', boxShadow: '0 0 12px #00DF81' }} />
-                100% Purified Status
-              </div>
-              <div style={{ marginTop: 'auto', paddingTop: '32px' }}>
-                <Link to="/ledger" style={{ color: '#E5C07B', textDecoration: 'none', fontSize: '1rem', fontWeight: 500, borderBottom: '1px solid rgba(229,192,123,0.3)', paddingBottom: '4px', transition: 'border-color 0.3s' }} onMouseEnter={(e) => e.currentTarget.style.borderColor = '#E5C07B'} onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(229,192,123,0.3)'}>
-                  View Detailed Ledger →
-                </Link>
-              </div>
-            </Card> */}
-
+            {/* Analysis Summary */}
             <Card variants={cardVariants}>
               <Title>Analysis Summary</Title>
               
@@ -398,32 +458,32 @@ export default function Dashboard() {
               
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '16px', color: totalRiba > 0 ? '#E5C07B' : '#00DF81', fontWeight: 500 }}>
                 <div style={{ 
-                  width: 8, height: 8, borderRadius: '50%', 
+                  width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
                   backgroundColor: totalRiba > 0 ? '#E5C07B' : '#00DF81', 
                   boxShadow: `0 0 12px ${totalRiba > 0 ? '#E5C07B' : '#00DF81'}` 
                 }} />
                 {totalRiba > 0 
-                  ? `${activeResults.length} entries flagged for review` 
+                  ? `${activeResults.length} entries flagged` 
                   : 'Ledger is 100% clean'}
               </div>
               
-              <div style={{ marginTop: 'auto', paddingTop: '32px' }}>
-                <Link to="/ledger" style={{ color: '#E5C07B', textDecoration: 'none', fontSize: '1rem', fontWeight: 500, borderBottom: '1px solid rgba(229,192,123,0.3)', paddingBottom: '4px', transition: 'border-color 0.3s' }} onMouseEnter={(e) => e.currentTarget.style.borderColor = '#E5C07B'} onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(229,192,123,0.3)'}>
+              <ActionWrapper style={{ paddingTop: '32px' }}>
+                <Link to="/ledger" style={{ color: '#E5C07B', textDecoration: 'none', fontSize: '1rem', fontWeight: 500, borderBottom: '1px solid rgba(229,192,123,0.3)', paddingBottom: '4px', transition: 'border-color 0.3s', display: 'inline-block' }} onMouseEnter={(e) => e.currentTarget.style.borderColor = '#E5C07B'} onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(229,192,123,0.3)'}>
                   View Detailed Ledger →
                 </Link>
-              </div>
+              </ActionWrapper>
             </Card>
 
             {/* Recent Transactions Table */}
-            <Card variants={cardVariants} style={{ gridColumn: '1 / -1', padding: '32px' }}>
+            <TableCard variants={cardVariants}>
               <Title style={{ marginBottom: '24px' }}>Recent Flagged Entries</Title>
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
+              <TableWrapper>
+                <StyledTable>
                   <thead>
-                    <tr style={{ color: '#8C9A8E', textAlign: 'left', borderBottom: '1px solid rgba(229, 192, 123, 0.2)' }}>
-                      <th style={{ padding: '0 20px 20px 0', fontWeight: 500, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.85rem' }}>Date</th>
-                      <th style={{ padding: '0 20px 20px 0', fontWeight: 500, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.85rem' }}>Description</th>
-                      <th style={{ padding: '0 0 20px 0', fontWeight: 500, textAlign: 'right', letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.85rem' }}>Amount</th>
+                    <tr>
+                      <Th>Date</Th>
+                      <Th>Description</Th>
+                      <Th>Amount</Th>
                     </tr>
                   </thead>
                   <tbody>
@@ -434,17 +494,17 @@ export default function Dashboard() {
                         animate={{ opacity: 1, x: 0 }} 
                         transition={{ delay: 0.4 + (i * 0.1), duration: 0.5 }}
                       >
-                        <td style={{ padding: '20px 20px 20px 0', color: '#A1A1AA' }}>{r.date || 'Unknown'}</td>
-                        <td style={{ padding: '20px 20px 20px 0', color: '#F4F4F5' }}>{r.description}</td>
-                        <td style={{ padding: '20px 0 20px 0', color: '#E5C07B', textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 500 }}>
+                        <Td style={{ color: '#A1A1AA', whiteSpace: 'nowrap' }}>{r.date || 'Unknown'}</Td>
+                        <Td style={{ color: '#F4F4F5' }}>{r.description}</Td>
+                        <Td style={{ color: '#E5C07B', fontVariantNumeric: 'tabular-nums', fontWeight: 500 }}>
                           {formatter.format(r.amount)}
-                        </td>
+                        </Td>
                       </Tr>
                     ))}
                   </tbody>
-                </table>
-              </div>
-            </Card>
+                </StyledTable>
+              </TableWrapper>
+            </TableCard>
             
           </Grid>
         )}

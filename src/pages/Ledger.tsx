@@ -25,13 +25,14 @@ const PageWrapper = styled.div`
   color: #F4F4F5;
   font-family: 'Outfit', sans-serif;
   position: relative;
+  overflow-x: hidden; /* CRITICAL: Prevents horizontal scrolling from glow */
 
   @media (max-width: 768px) {
     padding: 72px 0 3.5rem;
   }
 
   @media (max-width: 480px) {
-    padding: 64px 0 3rem;
+    padding: 40px 0 3rem;
   }
 `;
 
@@ -46,6 +47,11 @@ const AmbientGlow = styled.div`
   background: radial-gradient(ellipse, rgba(229, 192, 123, 0.05) 0%, rgba(10, 15, 13, 0) 70%);
   z-index: -1;
   pointer-events: none;
+
+  @media (max-width: 768px) {
+    width: 100vw;
+    height: 100vw;
+  }
 `;
 
 const ContentZ = styled.div`
@@ -54,12 +60,16 @@ const ContentZ = styled.div`
   padding: 0 1.5rem;
 
   @media (max-width: 480px) {
-    padding: 0 1.1rem;
+    padding: 0 1rem;
   }
 `;
 
 const Header = styled.div`
   margin-bottom: 2.5rem;
+
+  @media (max-width: 480px) {
+    margin-bottom: 2rem;
+  }
 `;
 
 const Title = styled.h1`
@@ -67,7 +77,6 @@ const Title = styled.h1`
   font-size: 2.75rem;
   font-weight: 600;
   margin: 0 0 12px 0;
-  /* Metallic Gradient Text */
   background: linear-gradient(135deg, #F4F4F5 0%, #E5C07B 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -79,6 +88,7 @@ const Title = styled.h1`
 
   @media (max-width: 480px) {
     font-size: 2rem;
+    margin: 0 0 8px 0;
   }
 `;
 
@@ -89,7 +99,7 @@ const Subtitle = styled.p`
   font-weight: 300;
 
   @media (max-width: 480px) {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
 `;
 
@@ -104,12 +114,29 @@ const Card = styled(motion.div)`
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   overflow: hidden;
   position: relative;
+
+  @media (max-width: 480px) {
+    border-radius: 20px;
+  }
 `;
 
 // --- TABLE STYLING ---
 const TableContainer = styled.div`
   overflow-x: auto;
   width: 100%;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  
+  /* Stylish Scrollbar for Webkit */
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: rgba(10, 15, 13, 0.5);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(229, 192, 123, 0.3);
+    border-radius: 10px;
+  }
 `;
 
 const Table = styled.table`
@@ -127,24 +154,27 @@ const Th = styled.th`
   letter-spacing: 1.5px;
   font-weight: 500;
   border-bottom: 1px solid rgba(229, 192, 123, 0.15);
-  background: rgba(0, 0, 0, 0.2); /* Slight darkening for header */
+  background: rgba(0, 0, 0, 0.2);
 
   @media (max-width: 600px) {
     padding: 16px 18px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 14px 16px;
   }
 `;
 
 const Tr = styled(motion.tr)<{ $isExcluded: boolean }>`
   transition: background 0.3s ease, opacity 0.3s ease, transform 0.2s ease;
-  opacity: ${({ $isExcluded }) => ($isExcluded ? 0.6 : 1)};
+  opacity: ${({ $isExcluded }) => ($isExcluded ? 0.5 : 1)};
 
   &:hover {
     background: rgba(229, 192, 123, 0.03);
     transform: translateY(-1px);
   }
 
-  /* Excluded State Styles */
   td {
     color: ${({ $isExcluded }) => ($isExcluded ? '#5C6A60' : '#F4F4F5')};
     text-decoration: ${({ $isExcluded }) => ($isExcluded ? 'line-through' : 'none')};
@@ -171,6 +201,11 @@ const Td = styled.td`
     padding: 16px 18px;
     font-size: 0.95rem;
   }
+
+  @media (max-width: 480px) {
+    padding: 14px 16px;
+    font-size: 0.9rem;
+  }
 `;
 
 const ExcludeBtn = styled.button<{ $isExcluded: boolean }>`
@@ -190,6 +225,23 @@ const ExcludeBtn = styled.button<{ $isExcluded: boolean }>`
     border-color: ${({ $isExcluded }) => ($isExcluded ? '#E5C07B' : '#EF4444')};
     color: ${({ $isExcluded }) => ($isExcluded ? '#E5C07B' : '#EF4444')};
   }
+
+  /* Responsive Text Swapping logic */
+  .mobile-text {
+    display: none;
+  }
+
+  @media (max-width: 480px) {
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    
+    .desktop-text {
+      display: none;
+    }
+    .mobile-text {
+      display: inline;
+    }
+  }
 `;
 
 // --- EMPTY STATE & BUTTONS ---
@@ -205,7 +257,7 @@ const EmptyState = styled.div`
   }
 
   @media (max-width: 480px) {
-    padding: 4.5rem 1.25rem;
+    padding: 4rem 1.25rem;
   }
 `;
 
@@ -213,6 +265,14 @@ const FloatingIcon = styled.div`
   animation: ${float} 4s ease-in-out infinite;
   margin-bottom: 24px;
   color: rgba(229, 192, 123, 0.5);
+
+  @media (max-width: 480px) {
+    margin-bottom: 16px;
+    svg {
+      width: 48px;
+      height: 48px;
+    }
+  }
 `;
 
 const EmptyText = styled.div`
@@ -220,6 +280,12 @@ const EmptyText = styled.div`
   font-size: 1.15rem;
   font-weight: 300;
   margin-bottom: 32px;
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
 `;
 
 const ButtonGroup = styled.div`
@@ -228,6 +294,10 @@ const ButtonGroup = styled.div`
   align-items: center;
   flex-wrap: wrap;
   justify-content: center;
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
 `;
 
 const ActionBtn = styled(motion.button)`
@@ -258,23 +328,10 @@ const ActionBtn = styled(motion.button)`
   &:hover {
     box-shadow: 0 15px 35px rgba(229, 192, 123, 0.3);
   }
-`;
 
-const SecondaryAction = styled(motion.button)`
-  padding: 14px 32px;
-  background: rgba(255, 255, 255, 0.03);
-  color: #E5C07B;
-  border: 1px solid rgba(229, 192, 123, 0.2);
-  border-radius: 999px;
-  font-weight: 500;
-  font-size: 1rem;
-  cursor: pointer;
-  font-family: 'Outfit', sans-serif;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: rgba(229, 192, 123, 0.08);
-    border-color: rgba(229, 192, 123, 0.4);
+  @media (max-width: 480px) {
+    width: 100%;
+    padding: 14px 24px;
   }
 `;
 
@@ -369,7 +426,8 @@ export default function Ledger() {
                               $isExcluded={isExcluded}
                               onClick={() => handleExclude(i)}
                             >
-                              {isExcluded ? 'Include again' : 'Exclude from total'}
+                              <span className="desktop-text">{isExcluded ? 'Include again' : 'Exclude from total'}</span>
+                              <span className="mobile-text">{isExcluded ? 'Include' : 'Exclude'}</span>
                             </ExcludeBtn>
                           </Td>
                         </Tr>
